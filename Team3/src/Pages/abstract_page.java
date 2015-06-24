@@ -1,67 +1,58 @@
 package Pages;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import com.google.common.base.Function;
+import org.openqa.selenium.interactions.Actions;
 
 public abstract class abstract_page {
 
 	protected WebDriver driver;
-	protected abstract String getLoadedLocator();
-    protected final Log log;
-    
-    protected abstract_page()
-    {
-        driver = browser.getBrowser().getDriver();
-        log = LogFactory.getLog(getClass());
-        log.debug("Created page abstraction for " + getClass().getName());
-    }
-    
-    /*Check control exist
-     * Para: control name
-     * Return: boolean
-     * Creator: Tan Vo
-     */
-	public boolean isControlEmpty(String controlName) 
-	{
-		 final boolean isPresent = driver.findElements(By.xpath(controlName)).isEmpty();
-		 if(isPresent==false)
-			 return true;
-		 return false;
+	
+	public abstract_page(WebDriver driver){
+		this.driver = driver;
 	}
 	
-	/*Wait for control exist
-     * Para: xpath, timemout
-     * Return: none
-     * Creator: Tan Vo
-     */
-	public void waitForControl(final String controlXPath, long timeout)
-	{
-		try {
-			WebDriverWait wait = new WebDriverWait(driver, timeout);
-
-			Function<WebDriver, WebElement> waitFunction = new Function<WebDriver, WebElement>() {
-				@Override
-				public WebElement apply(WebDriver driver) {
-					return driver.findElement(By.xpath(controlXPath));
-				}
-			};
-			wait.until(waitFunction); 
-		} catch (Exception e) {
-			log.debug("Element doesn't exist");
-		}
+	public login_page navigatetoLoginpage(){
+		driver.navigate().to("http://localhost:8080/Joomla/administrator/index.php");
+		return new login_page(driver);
 	}
 	
-	/*Wait for page load
-     * Para: timemout
-     * Return: none
-     * Creator: Tan Vo
-     */
-	public void waitForPageLoaded(long timeout) {
-		waitForControl(getLoadedLocator(), timeout);
+	/*Enter value to element
+	 * para: by, value
+	 * creator: Tan Vo
+	 */
+	public void enterElement(By by, String _value) {
+		WebElement element = driver.findElement(by);
+		element.clear();
+		element.sendKeys(_value);
+	}
+	
+	/*Click on element
+	 * Para: by
+	 * Creator: Tan Vo
+	 */
+	public void clickElement(By by){
+		WebElement element = driver.findElement(by);
+		element.click();
+	}
+	
+	/*Hover on element
+	 * Para: by
+	 * Creator: Tan Vo
+	 */
+	public void hoverElement(By by){
+		WebElement element = driver.findElement(by);
+		Actions builder = new Actions(driver);
+		builder.moveToElement(element).perform();
+	}
+	
+	/*Select element
+	 * Para: by
+	 * Creator: Tan Vo
+	 */
+	public void selectElement(By by, String _value){
+		WebElement element = driver.findElement(by);
+		element.sendKeys(_value);
 	}
 }
